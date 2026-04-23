@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,7 +12,6 @@ body {
   color: white;
 }
 
-/* HEADER */
 header {
   padding: 20px;
   text-align: center;
@@ -28,7 +26,6 @@ h1 {
   font-size: 40px;
 }
 
-/* SEARCH */
 #search {
   margin-top: 15px;
   padding: 12px;
@@ -38,7 +35,6 @@ h1 {
   font-size: 16px;
 }
 
-/* GRID */
 #gamesGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -46,7 +42,6 @@ h1 {
   padding: 20px;
 }
 
-/* CARD */
 .game-card {
   background: #1e293b;
   border-radius: 15px;
@@ -72,7 +67,6 @@ h1 {
   font-size: 18px;
 }
 
-/* GAME VIEW */
 #gameContainer {
   display: none;
   width: 100%;
@@ -119,9 +113,19 @@ iframe {
     <div class="game-title">Traffic Jam 3D</div>
   </div>
 
-  <div class="game-card" data-name="arcade games" onclick="loadGame('arcade')">
-    <img src="https://play-lh.googleusercontent.com/6n3sK9G9X1z5n3x9uJX4Xl8zqZp6J1gq9z3Y2S5P4x3Q9j2x1Z8y3Q=s256">
-    <div class="game-title">Arcade Games</div>
+  <div class="game-card" data-name="2games arcade" onclick="loadGame('2games')">
+    <img src="https://2games.io/cache/data/image/options/2gamesio-f100x45.webp">
+    <div class="game-title">2games</div>
+  </div>
+
+  <div class="game-card" data-name="1games io" onclick="loadGame('1games')">
+    <img src="https://1games.io/favicon.ico">
+    <div class="game-title">1games.io</div>
+  </div>
+
+  <div class="game-card" data-name="cpsgames org" onclick="loadGame('cpsgames')">
+    <img src="https://cpsgames.org/favicon.ico">
+    <div class="game-title">cpsgames.org</div>
   </div>
 
 </div>
@@ -144,8 +148,16 @@ function loadGame(game) {
       "https://html5.gamedistribution.com/337302b23b5943d8bcfc501d81d50cdb/?gd_sdk_referrer_url=https://trafficjam3d.com";
   }
 
-  if (game === "arcade") {
+  if (game === "2games") {
     document.getElementById("gameFrame").src = "https://2games.io";
+  }
+
+  if (game === "1games") {
+    document.getElementById("gameFrame").src = "https://1games.io";
+  }
+
+  if (game === "cpsgames") {
+    document.getElementById("gameFrame").src = "https://cpsgames.org";
   }
 }
 
@@ -169,4 +181,3 @@ function searchGames() {
 
 </body>
 </html>
-```
