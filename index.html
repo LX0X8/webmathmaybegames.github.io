@@ -1,0 +1,114 @@
+```html
+<!DOCTYPE html>
+<html>
+<head>
+<title>Games Hub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #0f172a;
+  color: white;
+}
+
+#menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+h1 {
+  font-size: 50px;
+  margin-bottom: 30px;
+}
+
+.game-btn {
+  padding: 15px 30px;
+  margin: 10px;
+  font-size: 20px;
+  background: #22c55e;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  width: 250px;
+}
+
+.game-btn:hover {
+  background: #16a34a;
+}
+
+#gameContainer {
+  display: none;
+  width: 100%;
+  height: 100vh;
+}
+
+#topBar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: #020617;
+  padding: 10px;
+  text-align: left;
+  z-index: 10;
+}
+
+#backBtn {
+  padding: 10px 20px;
+  background: #ef4444;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: white;
+}
+
+iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+</style>
+</head>
+
+<body>
+
+<div id="menu">
+  <h1>Games Hub</h1>
+  <button class="game-btn" onclick="loadGame('traffic')">Traffic Jam 3D</button>
+  <button class="game-btn" onclick="loadGame('arcade')">Arcade Games</button>
+</div>
+
+<div id="gameContainer">
+  <div id="topBar">
+    <button id="backBtn" onclick="goBack()">← Back to Menu</button>
+  </div>
+  <iframe id="gameFrame"></iframe>
+</div>
+
+<script>
+function loadGame(game) {
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("gameContainer").style.display = "block";
+
+  if (game === "traffic") {
+    document.getElementById("gameFrame").src = "https://html5.gamedistribution.com/337302b23b5943d8bcfc501d81d50cdb/?gd_sdk_referrer_url=https://trafficjam3d.com";
+  }
+
+  if (game === "arcade") {
+    document.getElementById("gameFrame").src = "https://2games.io";
+  }
+}
+
+function goBack() {
+  document.getElementById("menu").style.display = "flex";
+  document.getElementById("gameContainer").style.display = "none";
+  document.getElementById("gameFrame").src = "";
+}
+</script>
+
+</body>
+</html>
+```
