@@ -4,6 +4,7 @@
 <head>
 <title>Games Hub</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
 body {
   margin: 0;
@@ -12,34 +13,66 @@ body {
   color: white;
 }
 
-#menu {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
+/* HEADER */
+header {
+  padding: 20px;
+  text-align: center;
+  background: #020617;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 h1 {
-  font-size: 50px;
-  margin-bottom: 30px;
+  margin: 0;
+  font-size: 40px;
 }
 
-.game-btn {
-  padding: 15px 30px;
-  margin: 10px;
-  font-size: 20px;
-  background: #22c55e;
-  border: none;
+/* SEARCH */
+#search {
+  margin-top: 15px;
+  padding: 12px;
+  width: 300px;
   border-radius: 10px;
+  border: none;
+  font-size: 16px;
+}
+
+/* GRID */
+#gamesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+/* CARD */
+.game-card {
+  background: #1e293b;
+  border-radius: 15px;
+  overflow: hidden;
   cursor: pointer;
-  width: 250px;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.game-btn:hover {
-  background: #16a34a;
+.game-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
 }
 
+.game-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.game-title {
+  padding: 10px;
+  text-align: center;
+  font-size: 18px;
+}
+
+/* GAME VIEW */
 #gameContainer {
   display: none;
   width: 100%;
@@ -52,7 +85,6 @@ h1 {
   width: 100%;
   background: #020617;
   padding: 10px;
-  text-align: left;
   z-index: 10;
 }
 
@@ -75,26 +107,41 @@ iframe {
 
 <body>
 
-<div id="menu">
+<header>
   <h1>Games Hub</h1>
-  <button class="game-btn" onclick="loadGame('traffic')">Traffic Jam 3D</button>
-  <button class="game-btn" onclick="loadGame('arcade')">Arcade Games</button>
+  <input type="text" id="search" placeholder="Search games..." onkeyup="searchGames()">
+</header>
+
+<div id="gamesGrid">
+
+  <div class="game-card" data-name="traffic jam 3d" onclick="loadGame('traffic')">
+    <img src="https://imgs.crazygames.com/traffic-jam-3d_16x9/20230913083516/traffic-jam-3d_16x9-cover?metadata=none&quality=70&width=640">
+    <div class="game-title">Traffic Jam 3D</div>
+  </div>
+
+  <div class="game-card" data-name="arcade games" onclick="loadGame('arcade')">
+    <img src="https://play-lh.googleusercontent.com/6n3sK9G9X1z5n3x9uJX4Xl8zqZp6J1gq9z3Y2S5P4x3Q9j2x1Z8y3Q=s256">
+    <div class="game-title">Arcade Games</div>
+  </div>
+
 </div>
 
 <div id="gameContainer">
   <div id="topBar">
-    <button id="backBtn" onclick="goBack()">← Back to Menu</button>
+    <button id="backBtn" onclick="goBack()">← Back</button>
   </div>
   <iframe id="gameFrame"></iframe>
 </div>
 
 <script>
 function loadGame(game) {
-  document.getElementById("menu").style.display = "none";
+  document.getElementById("gamesGrid").style.display = "none";
+  document.querySelector("header").style.display = "none";
   document.getElementById("gameContainer").style.display = "block";
 
   if (game === "traffic") {
-    document.getElementById("gameFrame").src = "https://html5.gamedistribution.com/337302b23b5943d8bcfc501d81d50cdb/?gd_sdk_referrer_url=https://trafficjam3d.com";
+    document.getElementById("gameFrame").src =
+      "https://html5.gamedistribution.com/337302b23b5943d8bcfc501d81d50cdb/?gd_sdk_referrer_url=https://trafficjam3d.com";
   }
 
   if (game === "arcade") {
@@ -103,9 +150,20 @@ function loadGame(game) {
 }
 
 function goBack() {
-  document.getElementById("menu").style.display = "flex";
+  document.getElementById("gamesGrid").style.display = "grid";
+  document.querySelector("header").style.display = "block";
   document.getElementById("gameContainer").style.display = "none";
   document.getElementById("gameFrame").src = "";
+}
+
+function searchGames() {
+  let input = document.getElementById("search").value.toLowerCase();
+  let cards = document.getElementsByClassName("game-card");
+
+  for (let i = 0; i < cards.length; i++) {
+    let name = cards[i].getAttribute("data-name");
+    cards[i].style.display = name.includes(input) ? "block" : "none";
+  }
 }
 </script>
 
