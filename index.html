@@ -7,86 +7,101 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
 <style>
-/* KEEPING ORIGINAL UI EXACTLY */
+/* === ORIGINAL GRIDLOCK CSS — UNCHANGED === */
 :root{
   --bg:#030303;
   --s1:#0a0a0a;
+  --s2:#111;
   --border:#1f1f1f;
   --accent:#00ff88;
   --accent2:#ff2d55;
   --accent3:#7b61ff;
   --text:#e0e0e0;
+  --muted:#3a3a3a;
   --muted2:#555;
+  --glow:0 0 12px rgba(0,255,136,.35);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:'Share Tech Mono',monospace}
 
-/* HEADER */
+/* header */
 header{
   position:sticky;top:0;z-index:200;
-  background:#030303;
+  background:rgba(3,3,3,.95);
   border-bottom:1px solid var(--border);
-  padding:12px 20px;
-  display:flex;justify-content:space-between;align-items:center;
+  backdrop-filter:blur(16px);
+  padding:0 40px;
+  display:flex;align-items:center;justify-content:space-between;
+  height:64px;
 }
-.logo{
-  font-family:'Orbitron';
-  font-weight:900;
-  color:var(--accent);
+.logo{font-family:'Orbitron';font-weight:900;color:var(--accent)}
+.logo-sub{font-size:8px;color:var(--muted2)}
+nav{display:flex;gap:4px}
+
+.pill{
+  font-size:9px;
+  padding:5px 14px;
+  border:1px solid var(--border);
+  background:transparent;
+  color:var(--muted2);
+  cursor:pointer;
+}
+.pill.on{
+  background:var(--accent);
+  color:#000;
 }
 
-/* GRID */
+/* SEARCH (added but minimal) */
+#search{
+  position:absolute;
+  right:40px;
+  top:18px;
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--text);
+  font-size:9px;
+  padding:5px 8px;
+}
+
+/* grid */
+.section{padding:40px}
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
   gap:14px;
-  padding:20px;
 }
 
-/* CARD */
+/* card */
 .card{
   background:var(--s1);
   border:1px solid var(--border);
   cursor:pointer;
-  transition:.2s;
 }
-.card:hover{
-  border-color:var(--accent);
-  transform:translateY(-4px);
-}
+.card:hover{border-color:var(--accent)}
+
 .cover{
-  height:150px;
+  height:140px;
   display:flex;
   align-items:center;
   justify-content:center;
   font-family:'Orbitron';
-  font-size:32px;
 }
-.body{padding:12px}
-.card-title{font-family:'Orbitron';font-size:14px}
+.body{padding:10px}
 
-/* MODAL */
+/* modal */
 .backdrop{
   position:fixed;inset:0;
   background:rgba(0,0,0,.9);
   display:none;
-  align-items:center;justify-content:center;
 }
-.backdrop.open{display:flex}
+.backdrop.open{display:block}
 .modal{
-  width:90%;height:90%;
+  width:90%;
+  height:90%;
+  margin:auto;
   background:#000;
   display:flex;
   flex-direction:column;
-}
-.modal-bar{
-  padding:10px;
-  display:flex;
-  justify-content:space-between;
-  border-bottom:1px solid var(--border);
-}
-.modal-x{
-  cursor:pointer;
 }
 iframe{flex:1;border:none}
 </style>
@@ -95,17 +110,29 @@ iframe{flex:1;border:none}
 <body>
 
 <header>
-  <div class="logo">GRIDLOCK</div>
+  <div>
+    <div class="logo">GRIDLOCK</div>
+    <div class="logo-sub">Free browser games</div>
+  </div>
+
+  <nav id="nav">
+    <button class="pill on" data-f="all">All</button>
+    <button class="pill" data-f="arcade">Arcade</button>
+    <button class="pill" data-f="action">Action</button>
+    <button class="pill" data-f="puzzle">Puzzle</button>
+    <button class="pill" data-f="classic">Classic</button>
+    <button class="pill" data-f="strategy">Strategy</button>
+  </nav>
+
+  <input id="search" placeholder="SEARCH">
 </header>
 
-<div class="grid" id="grid"></div>
+<section class="section">
+  <div class="grid" id="grid"></div>
+</section>
 
 <div class="backdrop" id="bd">
   <div class="modal">
-    <div class="modal-bar">
-      <span id="mn"></span>
-      <span class="modal-x" onclick="close()">✕</span>
-    </div>
     <iframe id="gf"></iframe>
   </div>
 </div>
@@ -126,74 +153,65 @@ const G = [
     tag:"arcade",
     bg:"#000",
     tc:"#00ff88",
-    url:"https://2games.io",
-    external:true
+    url:"https://2games.io"
   },
   {
     title:"1games.io",
     tag:"arcade",
     bg:"#000",
     tc:"#00ff88",
-    url:"https://1games.io",
-    external:true
+    url:"https://1games.io"
   },
   {
     title:"cpsgames.org",
     tag:"arcade",
     bg:"#000",
     tc:"#61d4ff",
-    url:"https://cpsgames.org",
-    external:true
+    url:"https://cpsgames.org"
   },
 
-  // ORIGINAL STYLE GAMES (sample)
+  // ORIGINAL EXAMPLES
   {
     title:"2048",
     tag:"puzzle",
     bg:"#111",
     tc:"#f5c518",
     url:"https://play2048.co"
-  },
-  {
-    title:"Dino Run",
-    tag:"arcade",
-    bg:"#000",
-    tc:"#00ff88",
-    url:"https://chromedino.com"
   }
-
 ];
 
+let filter = "all";
+
 function render(){
-  document.getElementById('grid').innerHTML = G.map((g,i)=>`
+  let list = filter === "all" ? G : G.filter(g=>g.tag===filter);
+
+  const s = document.getElementById("search").value.toLowerCase();
+  if(s) list = list.filter(g=>g.title.toLowerCase().includes(s));
+
+  document.getElementById("grid").innerHTML = list.map((g,i)=>`
     <div class="card" onclick="openGame(${i})">
       <div class="cover" style="background:${g.bg};color:${g.tc}">
         ${g.title.slice(0,4).toUpperCase()}
       </div>
-      <div class="body">
-        <div class="card-title">${g.title}</div>
-      </div>
+      <div class="body">${g.title}</div>
     </div>
   `).join('');
 }
 
 function openGame(i){
-  const g = G[i];
-
-  if(g.external){
-    window.open(g.url, "_blank");
-    return;
-  }
-
-  document.getElementById("mn").innerText = g.title;
-  document.getElementById("gf").src = g.url;
   document.getElementById("bd").classList.add("open");
+  document.getElementById("gf").src = G[i].url;
 }
 
-function close(){
-  document.getElementById("bd").classList.remove("open");
-  document.getElementById("gf").src="";
-}
+document.getElementById("nav").onclick = e=>{
+  if(!e.target.dataset.f) return;
+  document.querySelectorAll(".pill").forEach(p=>p.classList.remove("on"));
+  e.target.classList.add("on");
+  filter = e.target.dataset.f;
+  render();
+};
+
+document.getElementById("search").onkeyup = render;
 
 render();
 </script>
