@@ -1,182 +1,201 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Games Hub</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GRIDLOCK — Free Browser Games</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial;
-  background: #0f172a;
-  color: white;
+/* KEEPING ORIGINAL UI EXACTLY */
+:root{
+  --bg:#030303;
+  --s1:#0a0a0a;
+  --border:#1f1f1f;
+  --accent:#00ff88;
+  --accent2:#ff2d55;
+  --accent3:#7b61ff;
+  --text:#e0e0e0;
+  --muted2:#555;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Share Tech Mono',monospace}
+
+/* HEADER */
+header{
+  position:sticky;top:0;z-index:200;
+  background:#030303;
+  border-bottom:1px solid var(--border);
+  padding:12px 20px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.logo{
+  font-family:'Orbitron';
+  font-weight:900;
+  color:var(--accent);
 }
 
-header {
-  padding: 20px;
-  text-align: center;
-  background: #020617;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+/* GRID */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:14px;
+  padding:20px;
 }
 
-h1 {
-  margin: 0;
-  font-size: 40px;
+/* CARD */
+.card{
+  background:var(--s1);
+  border:1px solid var(--border);
+  cursor:pointer;
+  transition:.2s;
 }
+.card:hover{
+  border-color:var(--accent);
+  transform:translateY(-4px);
+}
+.cover{
+  height:150px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:'Orbitron';
+  font-size:32px;
+}
+.body{padding:12px}
+.card-title{font-family:'Orbitron';font-size:14px}
 
-#search {
-  margin-top: 15px;
-  padding: 12px;
-  width: 300px;
-  border-radius: 10px;
-  border: none;
-  font-size: 16px;
+/* MODAL */
+.backdrop{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.9);
+  display:none;
+  align-items:center;justify-content:center;
 }
-
-#gamesGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
-  padding: 20px;
+.backdrop.open{display:flex}
+.modal{
+  width:90%;height:90%;
+  background:#000;
+  display:flex;
+  flex-direction:column;
 }
-
-.game-card {
-  background: #1e293b;
-  border-radius: 15px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+.modal-bar{
+  padding:10px;
+  display:flex;
+  justify-content:space-between;
+  border-bottom:1px solid var(--border);
 }
-
-.game-card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+.modal-x{
+  cursor:pointer;
 }
-
-.game-card img {
-  width: 100%;
-  height: 150px;
-  object-fit: cover;
-}
-
-.game-title {
-  padding: 10px;
-  text-align: center;
-  font-size: 18px;
-}
-
-#gameContainer {
-  display: none;
-  width: 100%;
-  height: 100vh;
-}
-
-#topBar {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  background: #020617;
-  padding: 10px;
-  z-index: 10;
-}
-
-#backBtn {
-  padding: 10px 20px;
-  background: #ef4444;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  color: white;
-}
-
-iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-}
+iframe{flex:1;border:none}
 </style>
 </head>
 
 <body>
 
 <header>
-  <h1>Games Hub</h1>
-  <input type="text" id="search" placeholder="Search games..." onkeyup="searchGames()">
+  <div class="logo">GRIDLOCK</div>
 </header>
 
-<div id="gamesGrid">
+<div class="grid" id="grid"></div>
 
-  <div class="game-card" data-name="traffic jam 3d" onclick="loadGame('traffic')">
-    <img src="https://imgs.crazygames.com/traffic-jam-3d_16x9/20230913083516/traffic-jam-3d_16x9-cover?metadata=none&quality=70&width=640">
-    <div class="game-title">Traffic Jam 3D</div>
+<div class="backdrop" id="bd">
+  <div class="modal">
+    <div class="modal-bar">
+      <span id="mn"></span>
+      <span class="modal-x" onclick="close()">✕</span>
+    </div>
+    <iframe id="gf"></iframe>
   </div>
-
-  <div class="game-card" data-name="2games arcade" onclick="loadGame('2games')">
-    <img src="https://2games.io/cache/data/image/options/2gamesio-f100x45.webp">
-    <div class="game-title">2games</div>
-  </div>
-
-  <div class="game-card" data-name="1games io" onclick="loadGame('1games')">
-    <img src="https://1games.io/favicon.ico">
-    <div class="game-title">1games.io</div>
-  </div>
-
-  <div class="game-card" data-name="cpsgames org" onclick="loadGame('cpsgames')">
-    <img src="https://cpsgames.org/favicon.ico">
-    <div class="game-title">cpsgames.org</div>
-  </div>
-
-</div>
-
-<div id="gameContainer">
-  <div id="topBar">
-    <button id="backBtn" onclick="goBack()">← Back</button>
-  </div>
-  <iframe id="gameFrame"></iframe>
 </div>
 
 <script>
-function loadGame(game) {
-  document.getElementById("gamesGrid").style.display = "none";
-  document.querySelector("header").style.display = "none";
-  document.getElementById("gameContainer").style.display = "block";
+const G = [
 
-  if (game === "traffic") {
-    document.getElementById("gameFrame").src =
-      "https://html5.gamedistribution.com/337302b23b5943d8bcfc501d81d50cdb/?gd_sdk_referrer_url=https://trafficjam3d.com";
+  // YOUR GAMES
+  {
+    title:"Traffic Jam 3D",
+    tag:"arcade",
+    bg:"#001a08",
+    tc:"#00ff88",
+    url:"https://html5.gamedistribution.com/337302b23b5943d8bcfc501d81d50cdb/?gd_sdk_referrer_url=https://trafficjam3d.com"
+  },
+  {
+    title:"2games",
+    tag:"arcade",
+    bg:"#000",
+    tc:"#00ff88",
+    url:"https://2games.io",
+    external:true
+  },
+  {
+    title:"1games.io",
+    tag:"arcade",
+    bg:"#000",
+    tc:"#00ff88",
+    url:"https://1games.io",
+    external:true
+  },
+  {
+    title:"cpsgames.org",
+    tag:"arcade",
+    bg:"#000",
+    tc:"#61d4ff",
+    url:"https://cpsgames.org",
+    external:true
+  },
+
+  // ORIGINAL STYLE GAMES (sample)
+  {
+    title:"2048",
+    tag:"puzzle",
+    bg:"#111",
+    tc:"#f5c518",
+    url:"https://play2048.co"
+  },
+  {
+    title:"Dino Run",
+    tag:"arcade",
+    bg:"#000",
+    tc:"#00ff88",
+    url:"https://chromedino.com"
   }
 
-  if (game === "2games") {
-    document.getElementById("gameFrame").src = "https://2games.io";
-  }
+];
 
-  if (game === "1games") {
-    document.getElementById("gameFrame").src = "https://1games.io";
-  }
-
-  if (game === "cpsgames") {
-    document.getElementById("gameFrame").src = "https://cpsgames.org";
-  }
+function render(){
+  document.getElementById('grid').innerHTML = G.map((g,i)=>`
+    <div class="card" onclick="openGame(${i})">
+      <div class="cover" style="background:${g.bg};color:${g.tc}">
+        ${g.title.slice(0,4).toUpperCase()}
+      </div>
+      <div class="body">
+        <div class="card-title">${g.title}</div>
+      </div>
+    </div>
+  `).join('');
 }
 
-function goBack() {
-  document.getElementById("gamesGrid").style.display = "grid";
-  document.querySelector("header").style.display = "block";
-  document.getElementById("gameContainer").style.display = "none";
-  document.getElementById("gameFrame").src = "";
-}
+function openGame(i){
+  const g = G[i];
 
-function searchGames() {
-  let input = document.getElementById("search").value.toLowerCase();
-  let cards = document.getElementsByClassName("game-card");
-
-  for (let i = 0; i < cards.length; i++) {
-    let name = cards[i].getAttribute("data-name");
-    cards[i].style.display = name.includes(input) ? "block" : "none";
+  if(g.external){
+    window.open(g.url, "_blank");
+    return;
   }
+
+  document.getElementById("mn").innerText = g.title;
+  document.getElementById("gf").src = g.url;
+  document.getElementById("bd").classList.add("open");
 }
+
+function close(){
+  document.getElementById("bd").classList.remove("open");
+  document.getElementById("gf").src="";
+}
+
+render();
 </script>
 
 </body>
